@@ -1,18 +1,22 @@
 How to Use
 
-// Clone the project to local
-$ git clone git@github.com:browny/invoiceq-core.git
-$ cd invoice-core
+0. Link webcam to your machine
 
-// Take out-of-source cmake build
+1. Prepare the CMake build environment
+
+2. Clone the project to local
+$ git clone git@github.com:browny/hand-tracking.git
+$ cd hand-tracking
+
+3. Take out-of-source CMake build
 $ mkdir release
 $ cd release
 $ cmake ..
 $ make
 
-// Run the exe
+4. Enjoy
 $ cd bin
-$ ./main <image filename> // ex: ./main test.jpg
+$ ./main
 
-// Exit
-press 'Esc' to close the result image and quit
+5. Exit
+Press 'Esc' to close window and quit
