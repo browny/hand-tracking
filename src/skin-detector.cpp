@@ -1,5 +1,5 @@
 
-#include "skin-detector.h"
+#include "../include/skin-detector.h"
 
 SkinDetector::SkinDetector(CvSize imgSz) {
 

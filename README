@@ -1,0 +1,18 @@
+How to Use
+
+// Clone the project to local
+$ git clone git@github.com:browny/invoiceq-core.git
+$ cd invoice-core
+
+// Take out-of-source cmake build
+$ mkdir release
+$ cd release
+$ cmake ..
+$ make
+
+// Run the exe
+$ cd bin
+$ ./main <image filename> // ex: ./main test.jpg
+
+// Exit
+press 'Esc' to close the result image and quit

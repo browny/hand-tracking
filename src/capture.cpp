@@ -1,5 +1,5 @@
 
-#include "capture.h"
+#include "../include/capture.h"
 
 Capture::Capture(int num, CvSize dispSize, CvSize resolutionSize) {
 

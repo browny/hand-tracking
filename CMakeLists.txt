@@ -1,0 +1,4 @@
+cmake_minimum_required(VERSION 2.8)
+
+PROJECT(HAND_TRACKING)
+ADD_SUBDIRECTORY(src)

@@ -1,8 +1,8 @@
 
-#include "capture.h"
-#include "skin-detector.h"
-#include "tracker.h"
 #include <string>
+#include "../include/capture.h"
+#include "../include/skin-detector.h"
+#include "../include/tracker.h"
 using namespace std;
 
 int main(int argc, char* argv[]) {

@@ -2,12 +2,12 @@
 #ifndef _CAPTURE_H_
 #define _CAPTURE_H_
 
-#include <cv.h>
-#include <cxcore.h>
-#include <highgui.h>
 #include <string>
 #include <vector>
 #include <iostream>
+#include "./opencv/core/core_c.h"
+#include "./opencv/imgproc/imgproc_c.h"
+#include "./opencv/highgui/highgui_c.h"
 using namespace std;
 
 enum VIDEO_TYPE {

@@ -2,10 +2,10 @@
 #ifndef _TRACKER_H_
 #define _TRACKER_H_
 
-#include <cv.h>
-#include <cxcore.h>
 #include <vector>
 #include <iostream>
+#include "./opencv/core/core_c.h"
+#include "./opencv/imgproc/imgproc_c.h"
 #include "cluster.h"
 
 using namespace std;
