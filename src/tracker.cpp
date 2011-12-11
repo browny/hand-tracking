@@ -1,6 +1,5 @@
 
 #include "../include/tracker.h"
-#include "../include/opencv/highgui/highgui_c.h"
 
 Tracker::Tracker(CvSize imgSz) :
 

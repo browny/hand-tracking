@@ -2,8 +2,7 @@
 #ifndef _SKINDETECTOR_H_
 #define _SKINDETECTOR_H_
 
-#include "./opencv/core/core_c.h"
-#include "./opencv/imgproc/imgproc_c.h"
+#include <cv.h>
 #include "skin-lookup-table.h"
 
 class SkinDetector {

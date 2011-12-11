@@ -3,7 +3,7 @@
 #define _CLUSTER_H_
 
 #include <vector>
-#include "./opencv/core/core_c.h"
+#include <cv.h>
 using namespace std;
 
 typedef vector<CvPoint> Points;

@@ -4,8 +4,8 @@
 
 #include <vector>
 #include <iostream>
-#include "./opencv/core/core_c.h"
-#include "./opencv/imgproc/imgproc_c.h"
+#include <cv.h>
+#include <highgui.h>
 #include "cluster.h"
 
 using namespace std;
