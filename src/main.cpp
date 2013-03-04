@@ -11,7 +11,7 @@ int main(int argc, char* argv[]) {
 	//Capture capture("test.wmv", windowSize, windowSize);
 
 	// --- Read camera --- //
-	CvSize dispSize = cvSize(320, 240);
+	CvSize dispSize = cvSize(640, 480);
 	CvSize resolutionSize = dispSize;
 	Capture capture(1, dispSize, resolutionSize);
 

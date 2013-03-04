@@ -1,5 +1,5 @@
 
-####1. Prepare your OpenCV environment####
+####1. Prepare the OpenCV environment####
 
 #####Linux#####
 
