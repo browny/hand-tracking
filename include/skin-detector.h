@@ -9,17 +9,17 @@ class SkinDetector {
 
 public:
 
-	SkinDetector(CvSize imgSz);
+    SkinDetector(CvSize imgSz);
 
-	IplImage* skinBinaryImg;
-	void detectSkin(const IplImage* src, IplImage* dst);
+    IplImage* skinBinaryImg;
+    void detectSkin(const IplImage* src, IplImage* dst);
 
-	~SkinDetector();
+    ~SkinDetector();
 
 private:
 
-	IplImage* m_yCbCrImg;
-	void skinDetectKernel(const IplImage *src, IplImage* yCbCrImg, IplImage* dst);
+    IplImage* m_yCbCrImg;
+    void skinDetectKernel(const IplImage *src, IplImage* yCbCrImg, IplImage* dst);
 
 };
 
