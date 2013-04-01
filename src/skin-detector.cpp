@@ -2,21 +2,16 @@
 #include "../include/skin-detector.h"
 
 SkinDetector::SkinDetector(CvSize imgSz) {
-
     skinBinaryImg = cvCreateImage(imgSz, IPL_DEPTH_8U, 1);
     m_yCbCrImg = cvCreateImage(imgSz, IPL_DEPTH_8U, 3);
-
 }
 
 void SkinDetector::detectSkin(const IplImage* src, IplImage* dst) {
-
     skinDetectKernel(src, m_yCbCrImg, dst);
     cvSmooth(dst, dst);
-
 }
 
 void SkinDetector::skinDetectKernel(const IplImage *src, IplImage* yCbCrImg, IplImage* dst) {
-
     /*
      * 	Skin Color Detection:
      *		Using the skin color ellipse model.
@@ -45,7 +40,6 @@ void SkinDetector::skinDetectKernel(const IplImage *src, IplImage* yCbCrImg, Ipl
     int nx, ny;
 
     for (i = 0; i < imagesize; ++i) {
-
         ++p_data;
         Cr = *p_data++;
         Cb = *p_data++;
@@ -62,12 +56,9 @@ void SkinDetector::skinDetectKernel(const IplImage *src, IplImage* yCbCrImg, Ipl
         }
         ++p_out;
     }
-
 }
 
 SkinDetector::~SkinDetector() {
-
     cvReleaseImage(&skinBinaryImg);
     cvReleaseImage(&m_yCbCrImg);
-
 }

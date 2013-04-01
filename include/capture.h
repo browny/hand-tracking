@@ -14,10 +14,9 @@ enum VIDEO_TYPE {
     VIDEOFILE
 };
 
-class Capture {
-
+class Capture
+{
 public:
-
     Capture(int num, CvSize dispSize, CvSize resolutionSize);
     Capture(string fileName, CvSize dispSize, CvSize resolutionSize);
 
@@ -29,7 +28,6 @@ public:
     ~Capture();
 
 private:
-
     string m_fileName;
     vector<CvCapture*> m_channelList;
 
@@ -42,4 +40,3 @@ private:
 };
 
 #endif
-

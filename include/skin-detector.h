@@ -5,10 +5,9 @@
 #include <cv.h>
 #include "skin-lookup-table.h"
 
-class SkinDetector {
-
+class SkinDetector
+{
 public:
-
     SkinDetector(CvSize imgSz);
 
     IplImage* skinBinaryImg;
@@ -17,10 +16,8 @@ public:
     ~SkinDetector();
 
 private:
-
     IplImage* m_yCbCrImg;
     void skinDetectKernel(const IplImage *src, IplImage* yCbCrImg, IplImage* dst);
-
 };
 
 #endif

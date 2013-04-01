@@ -1,9 +1,7 @@
 
 #include "../include/cluster.h"
 
-Cluster::Cluster() {
-
-}
+Cluster::Cluster() {}
 
 int Cluster::cluster(const Points &points, int clusterNum, double mergeLength,
         vector<Points> &clusteredPts, Points &centers) {
@@ -14,7 +12,8 @@ int Cluster::cluster(const Points &points, int clusterNum, double mergeLength,
     return mergeClusters(mergeLength, centers, clusteredPts);
 }
 
-void Cluster::kMeans(const Points &pts, int clusterNum, vector<Points> &clusteredPts) {
+void Cluster::kMeans(const Points &pts, int clusterNum,
+        vector<Points> &clusteredPts) {
 
     int length = pts.size();
 
@@ -24,6 +23,7 @@ void Cluster::kMeans(const Points &pts, int clusterNum, vector<Points> &clustere
 
     for (int row = 0; row < points->rows; row++) {
         float* ptr = (float*) (points->data.ptr + row * points->step);
+
         for (int col = 0; col < points->cols; col++) {
             *ptr = static_cast<float> (pts[row].x);
             ptr++;
@@ -45,17 +45,13 @@ void Cluster::kMeans(const Points &pts, int clusterNum, vector<Points> &clustere
     cvReleaseMat(&clusters);
 }
 
-void Cluster::packIntoClusteredPts(int clusterNum, const CvMat* points, const CvMat* clusters,
-        vector<Points> &clusteredPts) {
-
+void Cluster::packIntoClusteredPts(int clusterNum, const CvMat* points,
+        const CvMat* clusters, vector<Points> &clusteredPts) {
     Points tempPts;
-
     for (int i = 0; i < clusterNum; i++) {
-
         tempPts.clear();
 
         for (int row = 0; row < clusters->rows; row++) {
-
             float* p_point = (float*) (points->data.ptr + row * points->step);
             int X = static_cast<int> (*p_point);
             p_point++;
@@ -66,32 +62,22 @@ void Cluster::packIntoClusteredPts(int clusterNum, const CvMat* points, const Cv
         }
 
         clusteredPts.push_back(tempPts);
-
     }
-
 }
 
 void Cluster::removeEmptyCluster(vector<Points> &clusteredPts) {
-
     for (unsigned int i = 0; i < clusteredPts.size(); ++i) {
-
         if (clusteredPts[i].empty()) {
-
             vector<Points>::iterator it = clusteredPts.begin();
             it = it + i;
             clusteredPts.erase(it);
             i = i - 1;
-
         }
-
     }
-
 }
 
 void Cluster::getClusterCenters(const vector<Points> &clusteredPts, Points &centers) {
-
     for (unsigned int i = 0; i < clusteredPts.size(); i++) {
-
         int x = 0, y = 0;
         vector<CvPoint> tempClass(clusteredPts[i]);
 
@@ -101,26 +87,18 @@ void Cluster::getClusterCenters(const vector<Points> &clusteredPts, Points &cent
         }
 
         centers.push_back(cvPoint(x / tempClass.size(), y / tempClass.size()));
-
     }
-
 }
 
 int Cluster::mergeClusters(double mergeLength, Points &centers, vector<Points> &clusteredPts) {
-
     bool mergeDone = false;
-
     while (mergeDone != true) {
-
         CvPoint toFrom = findMostSimilar(mergeLength, &mergeDone, centers);
 
         if (mergeDone == false)
             merge(toFrom, centers, clusteredPts);
-
     }
-
     return centers.size();
-
 }
 
 CvPoint Cluster::findMostSimilar(double mergeLength, bool* mergeDone, Points &centers) {
@@ -134,11 +112,9 @@ CvPoint Cluster::findMostSimilar(double mergeLength, bool* mergeDone, Points &ce
 
     for (unsigned int i = 0; i < centers.size() - 1; ++i) {
         for (unsigned int j = i + 1; j < centers.size(); ++j) {
-
             centerDis = dist(centers[i], centers[j]);
 
             if ( (centerDis < mergeLength) && (centerDis < minDis) ) {
-
                 minDis = centerDis;
 
                 if (i < j) {
@@ -150,13 +126,11 @@ CvPoint Cluster::findMostSimilar(double mergeLength, bool* mergeDone, Points &ce
                 }
 
                 *mergeDone = false;
-
             }
         }
     }
 
     return cvPoint(mergeToIndex, mergeFromIndex);
-
 }
 
 void Cluster::merge(CvPoint toFrom, Points &centers, vector<Points> &clusteredPts) {
@@ -167,22 +141,14 @@ void Cluster::merge(CvPoint toFrom, Points &centers, vector<Points> &clusteredPt
     unsigned int frIdx = (unsigned int) toFrom.y;
 
     for (unsigned int i = 0; i < centers.size(); ++i) {
-
         if (i == toIdx) {
-
             vector<CvPoint> tempClass(clusteredPts[toIdx]);
-
             tempClass.insert(tempClass.end(), clusteredPts[frIdx].begin(),
                     clusteredPts[frIdx].end());
-
             mergedPts.push_back(tempClass);
-
         } else if ((i != toIdx) && (i != frIdx)) {
-
             mergedPts.push_back(clusteredPts[i]);
-
         }
-
     }
 
     getClusterCenters(mergedPts, mergedCenters);
@@ -196,10 +162,8 @@ void Cluster::merge(CvPoint toFrom, Points &centers, vector<Points> &clusteredPt
 
 double Cluster::dist(const CvPoint &point1, const CvPoint &point2) {
 
-    return sqrt((double) ((point1.x - point2.x) * (point1.x - point2.x) + (point1.y - point2.y)
-                * (point1.y - point2.y)));
+    return sqrt((double) ((point1.x - point2.x) * (point1.x - point2.x) +
+                (point1.y - point2.y) * (point1.y - point2.y)));
 }
 
-Cluster::~Cluster() {
-
-}
+Cluster::~Cluster() {}

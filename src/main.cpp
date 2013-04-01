@@ -7,10 +7,10 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 
-    // --- Read file --- //
+    // Read file
     //Capture capture("test.wmv", windowSize, windowSize);
 
-    // --- Read camera --- //
+    // Read camera
     CvSize dispSize = cvSize(640, 480);
     CvSize resolutionSize = dispSize;
     Capture capture(1, dispSize, resolutionSize);
@@ -21,7 +21,6 @@ int main(int argc, char* argv[]) {
     IplImage* frame;
 
     while (1) {
-
         capture.captureNext();
         frame = capture.channelImgList[0];
 
@@ -32,21 +31,15 @@ int main(int argc, char* argv[]) {
         tracker.track(frame, skinDetector.skinBinaryImg, tracker.currentHands);
 
         int c = cvWaitKey(30);
-        if ( (char) c == 27 ) { // 'Esc' to terminate
-
+        if ( (char) c == 27 ) // 'Esc' to terminate
             break;
-        }
 
-        if (c == '1' || c == '!') {
+        if (c == '1' || c == '!')
             tracker.setTrackNum(1);
-        }
-        if (c == '2' || c == '@') {
+        if (c == '2' || c == '@')
             tracker.setTrackNum(2);
-        }
-        if (c == '3' || c == '#') {
+        if (c == '3' || c == '#')
             tracker.setTrackNum(3);
-        }
-
     }
 
     return 0;

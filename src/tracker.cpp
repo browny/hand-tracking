@@ -35,7 +35,6 @@ Tracker::Tracker(CvSize imgSz) :
 }
 
 void Tracker::setTrackNum(int num) {
-
     m_trackNum = num;
     currentHands.resize(m_trackNum);
     m_clusteredCenterBuffers =
@@ -43,11 +42,9 @@ void Tracker::setTrackNum(int num) {
     m_handBuffers = vector<Points> (m_trackNum, Points(kHandBufferLength, cvPoint(-1, -1)));
 
     cout << "Tracking Num: " << m_trackNum << endl;
-
 }
 
 void Tracker::track(const IplImage* src, const IplImage* skinImg, Points &hands) {
-
     cvCopy(src, m_src);
 
     // Tracking the motion & skin color part
@@ -70,21 +67,17 @@ void Tracker::track(const IplImage* src, const IplImage* skinImg, Points &hands)
     cvShowImage("hand", m_src);
 
     cvCopy(m_srcGray, m_srcGrayOld);
-
 }
 
 void Tracker::getMovingSkinImg(const IplImage* src, const IplImage* skinImg) {
-
     cvCvtColor(src, m_srcGray, CV_BGR2GRAY);
 
     getDiffImg(m_srcGray, m_srcGrayOld, m_diffImg);
     cvAnd(m_diffImg, skinImg, m_motionSkinImg, 0);
-
 }
 
-void Tracker::getCandidates(const IplImage* skinImg, IplImage* motionSkinImg, int* num,
-        Rects &rects, Points &centers) {
-
+void Tracker::getCandidates(const IplImage* skinImg, IplImage* motionSkinImg,
+        int* num, Rects &rects, Points &centers) {
     connectComponent(motionSkinImg, 1, kCcSizeTh*10, num, rects, centers);
 
     // Use the first connected component result to resample skin image
@@ -100,89 +93,68 @@ void Tracker::getCandidates(const IplImage* skinImg, IplImage* motionSkinImg, in
 
     // Remove small connected components
     removeSmallCcs(num, rects, centers);
-
 }
 
 void Tracker::clusterCandidates(const Points &centers) {
-
     for (int i = 0; i < m_trackNum; ++i)
         shiftVector<CvPoint>( m_clusteredCenterBuffers[i], cvPoint(-1, -1) );
 
     if (centers.size() > 0) {
-
         Points clusteredCenters;
         vector<Points> clusteredPts;
 
-        int clusterNum = m_cluster.cluster(centers, m_trackNum, m_adptClusteredCenterMergeTh,
-                clusteredPts, clusteredCenters);
+        int clusterNum = m_cluster.cluster(centers, m_trackNum,
+                m_adptClusteredCenterMergeTh, clusteredPts, clusteredCenters);
 
         // Check clusteredCenterBuffers conditon
         vector<bool> empty(m_trackNum, true);
         bool isAllBufferEmpty = getEmptyIndex(m_clusteredCenterBuffers, empty);
 
         if (isAllBufferEmpty) {
-
             // Put the clusteredCenters into the corresponding clusteredCenterBuffers
             for (int i = 0; i < clusterNum; ++i)
                 m_clusteredCenterBuffers[i][0] = clusteredCenters[i];
-
         } else {
-
             for (int i = 0; i < clusterNum; ++i) {
-
                 CvPoint center = clusteredCenters[i];
 
                 // Find the center belongs to which centerBuffer
                 int idx = getClosestCenterBufIndex(center, m_clusteredCenterBuffers, empty);
 
                 if (idx != -1) {
-
                     // The center belong to 'idx' cluster
                     m_clusteredCenterBuffers[idx][0] = center;
-
                 } else {
-
                     // The center doesn't belong to any non-empty centerBuffer.
                     // If there were any empty buffer, it will be first member of the new cluster
                     for (int j = 0; j < m_trackNum; ++j) {
-
                         if (empty[j] == true) {
-
                             m_clusteredCenterBuffers[j][0] = center;
-
                             break;
-
                         }
                     }
                 }
             }
         }
     }
-
 }
 
 void Tracker::getHands() {
-
     for (int i = 0; i < m_trackNum; ++i) {
-
         shiftVector<CvPoint> (m_handBuffers[i], m_clusteredCenterBuffers[i][0]);
 
         // Average the hand buffer as the final detected hand
         currentHands[i] = avgPoints(m_handBuffers[i], m_adptHandBufferAvgLength);
-
     }
 }
 
-//--- Helper methods ---//
+// Below are helper methods
 double Tracker::avgGrayValue(const IplImage* src) {
-
     CvScalar avgGrayValue = cvAvg(src, 0);
     return avgGrayValue.val[0];
-
 }
 
 void Tracker::getDiffImg(const IplImage* img1, const IplImage* img2, IplImage* diff) {
-
     cvAbsDiff(img1, img2, diff);
     CvScalar avgGrayValue = cvAvg(img1);
 
@@ -192,11 +164,10 @@ void Tracker::getDiffImg(const IplImage* img1, const IplImage* img2, IplImage* d
         m_adptDiffTh = kMotionRatio * avgGrayValue.val[0];
 
     cvThreshold(diff, diff, m_adptDiffTh, 255, CV_THRESH_BINARY);
-
 }
 
-void Tracker::connectComponent(IplImage* src, const int poly_hull0, const float perimScale,
-        int* num, Rects &rects, Points &centers) {
+void Tracker::connectComponent(IplImage* src, const int poly_hull0,
+        const float perimScale, int* num, Rects &rects, Points &centers) {
 
     CvMemStorage* mem_storage = NULL;
     CvSeq* contours = NULL;
@@ -208,13 +179,12 @@ void Tracker::connectComponent(IplImage* src, const int poly_hull0, const float 
     // Find contours around only bigger regions
     mem_storage = cvCreateMemStorage(0);
 
-    CvContourScanner scanner = cvStartFindContours(src, mem_storage, sizeof(CvContour),
-            CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+    CvContourScanner scanner = cvStartFindContours(src, mem_storage,
+            sizeof(CvContour), CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+
     CvSeq* c;
     int numCont = 0;
-
     while ((c = cvFindNextContour(scanner)) != NULL) {
-
         double len = cvContourPerimeter(c);
 
         // calculate perimeter len threshold
@@ -224,23 +194,17 @@ void Tracker::connectComponent(IplImage* src, const int poly_hull0, const float 
         if (len < q) {
             cvSubstituteContour(scanner, NULL);
         } else {
-
             // smooth its edge if its large enough
             CvSeq* c_new;
             if (poly_hull0) {
-
                 // polygonal approximation
                 c_new = cvApproxPoly(c, sizeof(CvContour), mem_storage, CV_POLY_APPROX_DP, 2, 0);
-
             } else {
-
                 // convex hull of the segmentation
                 c_new = cvConvexHull2(c, mem_storage, CV_CLOCKWISE, 1);
-
             }
 
             cvSubstituteContour(scanner, c_new);
-
             numCont++;
         }
     }
@@ -249,16 +213,12 @@ void Tracker::connectComponent(IplImage* src, const int poly_hull0, const float 
 
     // Calc center of mass and/or bounding rectangles
     if (num != NULL) {
-
         // user wants to collect statistics
         int numFilled = 0, i = 0;
 
         for (i = 0, c = contours; c != NULL; c = c->h_next, i++) {
-
             if (i < *num) {
-
                 // bounding retangles around blobs
-
                 rects.push_back(cvBoundingRect(c));
 
                 CvPoint center = cvPoint(rects[i].x + rects[i].width / 2, rects[i].y
@@ -270,48 +230,37 @@ void Tracker::connectComponent(IplImage* src, const int poly_hull0, const float 
         }
 
         *num = numFilled;
-
     }
 
     cvReleaseMemStorage(&mem_storage);
-
 }
 
 void Tracker::removeSmallCcs(int* ccNum, Rects &rects, Points &centers) {
-
     Rects::iterator it = rects.begin();
     Points::iterator it2 = centers.begin();
 
     while (it != rects.end()) {
-
         int area = it->width * it->height;
-
         if ( area < m_adptCcRemoveAreaTh ) {
-
             rects.erase(it);
             centers.erase(it2);
             (*ccNum)--;
 
             it  = rects.begin();
             it2 = centers.begin();
-
         } else {
-
             it++;
             it2++;
-
         }
     }
 }
 
 void Tracker::resampleByPoints(const IplImage* input, const int srMar,
         const Points &points, IplImage* output) {
-
     cvSetZero(output); // clear output image
     CvSize sz = cvGetSize(output);
 
     for (unsigned int i = 0; i < points.size(); ++i) {
-
         CvPoint leftTop     = cvPoint(points[i].x - srMar, points[i].y - srMar);
         CvPoint rightBottom = cvPoint(points[i].x + srMar, points[i].y + srMar);
 
@@ -328,27 +277,24 @@ void Tracker::resampleByPoints(const IplImage* input, const int srMar,
             rightBottom.y = sz.height;
 
         for (int j = leftTop.y; j < rightBottom.y; j++) {
-
             uchar* ptr = (uchar*)(input->imageData + j*input->widthStep);
             uchar* ptrNew = (uchar*)(output->imageData + j*output->widthStep);
-
             for (int k = leftTop.x; k < rightBottom.x; k++)
                 ptrNew[k] = ptr[k];
         }
     }
 }
 
-void Tracker::drawCcs(const int num, const Rects &rects, const Points &centers,
-        IplImage* dst) {
-
+void Tracker::drawCcs(const int num, const Rects &rects,
+        const Points &centers, IplImage* dst) {
     if (num != 0) {
         for (int i = 0; i < num; ++i) {
             cvCircle(dst, centers[i], 5, CV_RGB(0, 255, 255), -1);
-            cvRectangle(dst, cvPoint(rects[i].x, rects[i].y), cvPoint(rects[i].x + rects[i].width,
-                        rects[i].y + rects[i].height), CV_RGB(255, 255, 0), 1);
+            cvRectangle(dst, cvPoint(rects[i].x, rects[i].y),
+                    cvPoint(rects[i].x + rects[i].width, rects[i].y + rects[i].height),
+                    CV_RGB(255, 255, 0), 1);
         }
     }
-
 }
 
 template<class myType>
@@ -360,16 +306,13 @@ void Tracker::shiftVector(vector<myType> &vec, myType element) {
 }
 
 bool Tracker::getEmptyIndex(const vector<Points> &centerBufs, vector<bool> &empty) {
-
     // Judge each centerBufs is empty or not
     for (int i = 0; i < m_trackNum; ++i) {
-
         empty[i] = true;
 
         for (int j = 0; j < m_trackNum; ++j)
             if (centerBufs[i][j].x != -1)
                 empty[i] = false;
-
     }
 
     bool isAllBufferEmpty = true;
@@ -378,47 +321,37 @@ bool Tracker::getEmptyIndex(const vector<Points> &centerBufs, vector<bool> &empt
             isAllBufferEmpty = false;
 
     return isAllBufferEmpty;
-
 }
 
 int Tracker::getClosestCenterBufIndex(CvPoint center, const vector<Points> &buf,
         const vector<bool> &empty) {
-
     double minDis = 999999999;
     int bufIndex = -1;
 
     for (int j = 0; j < m_trackNum; ++j) {
-
         if (!empty[j]) {
-
             for (int k = 1; k < (1 + m_adptClusterCheckLength); ++k) {
-
                 if ( buf[j][k].x != -1 ) {
-
                     double dist = distance(center, buf[j][k]);
-                    if ( (dist < m_adptClusteredCenterMergeTh) && (dist < minDis) ) {
 
+                    if ( (dist < m_adptClusteredCenterMergeTh) && (dist < minDis) ) {
                         minDis = dist;
                         bufIndex = j;
-
                     }
                 }
             }
         }
-
     }
 
     return bufIndex;
-
 }
 
 double Tracker::distance(const CvPoint &pt1, const CvPoint &pt2) {
-
-    return sqrt((double)((pt1.x - pt2.x)*(pt1.x - pt2.x) + (pt1.y - pt2.y)*(pt1.y - pt2.y)));
+    return sqrt((double)((pt1.x - pt2.x)*(pt1.x - pt2.x) +
+                (pt1.y - pt2.y)*(pt1.y - pt2.y)));
 }
 
 CvPoint Tracker::avgPoints(const Points &points, int num) {
-
     // Calculate the average of the points vector excluding (-1, -1)
     int goodCenterNum = 0;
     int accX = 0, accY = 0;
@@ -436,18 +369,16 @@ CvPoint Tracker::avgPoints(const Points &points, int num) {
         int bufCenter_y = accY / goodCenterNum;
 
         return cvPoint(bufCenter_x, bufCenter_y);
-
     } else {
-
         // if all points in buffer are (-1, -1), the hand point will disappear
         return cvPoint(-1, -1);
     }
-
 }
 
 void Tracker::drawHands(const Points &hands, int num, IplImage* dst) {
+    CvScalar ColorBox[4] = { CV_RGB(255,0,0), CV_RGB(0,255,0),
+        CV_RGB(0,0,255), CV_RGB(255,0,255) };
 
-    CvScalar ColorBox[4] = { CV_RGB(255,0,0), CV_RGB(0,255,0), CV_RGB(0,0,255), CV_RGB(255,0,255) };
     const int kRecSize = 15;
     CvSize sz = cvGetSize(dst);
 
@@ -486,22 +417,17 @@ void Tracker::drawHands(const Points &hands, int num, IplImage* dst) {
             cvRectangle(dst, leftTop, rightBot, ColorBox[i], 2);
 
             //cout << "x: " << hands[i].x << " y: " << hands[i].y << endl;
-
         } else {
-
+            ;
         }
-
     }
-
 }
 
 Tracker::~Tracker() {
-
     cvReleaseImage(&m_src);
     cvReleaseImage(&m_srcGray);
     cvReleaseImage(&m_srcGrayOld);
     cvReleaseImage(&m_diffImg);
     cvReleaseImage(&m_motionSkinImg);
     cvReleaseImage(&m_resampledSkinImg);
-
 }
