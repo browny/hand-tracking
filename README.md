@@ -1,4 +1,3 @@
-
 ####1. Prepare the OpenCV environment####
 
 #####Linux#####
@@ -30,7 +29,7 @@
 ####5. Enjoy####
 
 	$ cd bin
-	$ ./main test.jpg
+	$ ./main
 
 ####6. Exit####
 
